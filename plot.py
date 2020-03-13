@@ -17,6 +17,10 @@ data = data.drop(labels=['Province/State', 'Country/Region', 'Lat', 'Long'], axi
 # check if all remaining columns are valid dates
 [parse(entry) for entry in data]
 
+# check if no day is missing
+for day_before, day in zip(data.columns, data.columns[1:]):
+    assert((parse(day) - parse(day_before)).total_seconds() == 60 * 60 * 24)
+
 # German data format
 data = data.rename(columns={column: parse(column).strftime('%d.%m.%Y') for column in data.columns})
 
