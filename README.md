@@ -1,5 +1,5 @@
 # covid-19_deutschland
-Visualisierung von Covid-19 Statistiken
+Visualisierung von Covid-19 Statistiken.
 
 ## Schaubilder
 
