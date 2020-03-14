@@ -34,8 +34,8 @@ data = data.transpose()
 # replace index by name
 data = data.rename(columns=indices_countries)
 # plot
-data.plot(grid=True, title='Fälle Deutschland - Stand ' + last_date)
+data.plot(grid=True, title='Fälle - Stand ' + last_date)
 plt.savefig('cases.png')
 # log plot
-data.plot(logy=True, grid=True, title='Fälle Deutschland (mit logarithmischer Skala) - Stand ' + last_date)
+data.plot(logy=True, grid=True, title='Fälle (auf logarithmischer Skala) - Stand ' + last_date)
 plt.savefig('cases_log.png')
