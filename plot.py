@@ -52,18 +52,21 @@ def exp_func(x, a, t):
     a, t = restr(a, t)
     return a * np.exp(x / t) # + c assuming that exp(-inf) = 0
 
+figT, axT = plt.subplots()
+index_dates = data.index.to_list()
+index = np.arange(len(index_dates))
 for country in countries:
+    cases_min = 50 # min cases for fitting curves
     cases = np.array(data[country].to_list())
-    index = np.arange(len(cases))
     # fit in original space
     (a, t), (a_cov, t_cov) = curve_fit(exp_func, index, cases, maxfev=1000)
     # fit in log space
-    mask = cases > 50 # only consider data with more than 50 cases
+    mask = cases > cases_min # only consider data with more than 50 cases
     cases_masked = cases[mask]
     index_masked = index[mask]
     b, c = np.polyfit(index_masked, np.log(cases_masked + epsilon), 1)
 
-    index_dates = data.index.to_list()
+    # plot
     fig, ax = plt.subplots()
     ax.plot(index_dates, cases, label='data')
     ax.plot(index_dates, exp_func(index, a, t), label='fit a=%f, t=%f' % restr(a, t))
@@ -73,3 +76,22 @@ for country in countries:
     ax.set_xticks(np.linspace(index[0], index[-1], 6))
     ax.legend()
     fig.savefig(country + '_fit.png')
+
+    # piece-wise fitting of exponential function
+    interval = 3 # in days
+    cases_min = 30 # min cases for fitting curves
+    fit_over_time = []
+    for i in range(len(cases) - interval):
+        if cases[i] > cases_min:
+            cases_cut = cases[i:i + interval]
+            index_cut = index[i:i + interval]
+            result = np.polyfit(index_cut, np.log(cases_cut + epsilon), 1)
+            fit_over_time.append(result)
+#        else: # do not align start
+#            fit_over_time.append([np.nan, np.nan])
+    fit_over_time = np.array(fit_over_time)
+    axT.plot(range(len(fit_over_time)), 1 / fit_over_time[:, 0], label=country)
+
+# formatting
+axT.legend()
+figT.savefig('tau.png')
