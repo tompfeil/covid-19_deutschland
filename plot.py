@@ -43,10 +43,12 @@ data.plot(logy=True, grid=True, title='Fälle (auf logarithmischer Skala) - Stan
 plt.savefig('cases_log.png')
 
 # fitting exponential functions to data
-def exp_func(x, a, t, c):
+def restr(a, t, c):
     # consider growth only
-    a = np.abs(a)
-    t = np.abs(t)
+    return np.abs(a), np.abs(t), c
+
+def exp_func(x, a, t, c):
+    a, t, c = restr(a, t, c)
     return a * np.exp(x / t) + c
 
 for country in countries:
@@ -57,7 +59,7 @@ for country in countries:
     index_dates = data.index.to_list()
     fig, ax = plt.subplots()
     ax.plot(index_dates, cases, label='data')
-    ax.plot(index_dates, exp_func(index, *fit[0]), label='fit')
+    ax.plot(index_dates, exp_func(index, *fit[0]), label='fit a=%f, t=%f, c=%f' % tuple(restr(*fit[0])))
     ax.set_title(country)
     ax.set_ylim(-np.max(cases) / 20.0, np.max(cases) * 1.2)
     ax.set_xticks(np.linspace(index[0], index[-1], 6))
