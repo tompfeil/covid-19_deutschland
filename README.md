@@ -14,7 +14,7 @@ Visualisierung von Covid-19 Statistiken.
 
 ## Zeitverlauf der vorraussichtlichen Zeit bis sich die Fallzahlen verdoppeln
 
-* Für jeden Datenpunkt wird eine lineare Funktion (siehe oben) an `log2(Daten)` gefittet, wobei Daten die aktuellsten 3 Datenpunkte für diesen Zeitpunkt sind. Der Parameter `t=1/b` ergibt dann die aktuell prognostizierte Zeitdauer (unter Annahme einer Exponentialfunktionen) bis sich die Fallzahlen verdopplen.
+* Für jeden Datenpunkt wird eine lineare Funktion (siehe oben) an `log2(Daten)` gefittet, wobei `Daten` die aktuellsten 3 Datenpunkte für diesen Zeitpunkt sind. Der Parameter `t=1/b` ergibt dann die aktuell prognostizierte Zeitdauer (unter Annahme einer Exponentialfunktionen), bis sich die Fallzahlen verdopplen.
 
 ![Fallzahlen](tau.png)
 
