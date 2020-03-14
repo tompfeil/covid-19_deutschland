@@ -50,7 +50,7 @@ def restr(a, t):
 
 def exp_func(x, a, t):
     a, t = restr(a, t)
-    return a * np.exp(x / t) # + c assuming that exp(-inf) = 0
+    return a * np.power(2, x / t) # + c assuming that exp(-inf) = 0
 
 figT, axT = plt.subplots()
 index_dates = data.index.to_list()
@@ -64,13 +64,13 @@ for country in countries:
     mask = cases > cases_min # only consider data with more than 50 cases
     cases_masked = cases[mask]
     index_masked = index[mask]
-    b, c = np.polyfit(index_masked, np.log(cases_masked + epsilon), 1)
+    b, c = np.polyfit(index_masked, np.log2(cases_masked + epsilon), 1)
 
     # plot
     fig, ax = plt.subplots()
     ax.plot(index_dates, cases, label='data')
     ax.plot(index_dates, exp_func(index, a, t), label='fit a=%f, t=%f' % restr(a, t))
-    ax.plot(index_dates, exp_func(index, np.exp(c), 1 / b), label='fit b=%f, c=%f' % restr(b, c))
+    ax.plot(index_dates, exp_func(index, np.power(2, c), 1 / b), label='log2 fit b=%f, c=%f' % restr(b, c))
     ax.set_title(country)
     ax.set_ylim(-np.max(cases) / 20.0, np.max(cases) * 1.2)
     ax.set_xticks(np.linspace(index[0], index[-1], 6))
@@ -85,7 +85,7 @@ for country in countries:
         if cases[i] > cases_min:
             cases_cut = cases[i:i + interval]
             index_cut = index[i:i + interval]
-            result = np.polyfit(index_cut, np.log(cases_cut + epsilon), 1)
+            result = np.polyfit(index_cut, np.log2(cases_cut + epsilon), 1)
             fit_over_time.append(result)
 #        else: # do not align start
 #            fit_over_time.append([np.nan, np.nan])
@@ -94,4 +94,7 @@ for country in countries:
 
 # formatting
 axT.legend()
+axT.set_ylim([-1, 15])
+axT.set_xlabel('Tage seit Fälle > ' + str(cases_min))
+axT.set_ylabel('Tage bis Fälle verdoppelt')
 figT.savefig('tau.png')
