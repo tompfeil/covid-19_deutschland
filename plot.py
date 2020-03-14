@@ -73,13 +73,13 @@ for country in countries:
     # plot
     fig, ax = plt.subplots()
     ax.plot(index_dates, cases, label='Rohdaten')
-    ax.plot(index_dates, exp_func(index, a, t), label='Fit a=%.3f, t=%.3f' % restr(a, t))
-    ax.plot(index_dates, exp_func(index, np.power(2, c), 1 / b), label='Fit (log2) b=%.3f, c=%.3f' % restr(b, c))
+    ax.plot(index_dates, exp_func(index, a, t), label='Fit: a=%.3f, t=%.3f' % restr(a, t))
+    ax.plot(index_dates, exp_func(index, np.power(2, c), 1 / b), label='Fit (log2): b=%.3f, c=%.3f' % restr(b, c))
     ax.set_title(country)
     ax.set_ylim(-np.max(cases) / 20.0, np.max(cases) * 1.2)
     ax.set_xticks(np.linspace(index[0], index[-1], 6))
     ax.legend()
-    fig.savefig(country + '_fit.png')
+    fig.savefig(country.replace('ü', 'ue') + '_fit.png')
 
     # piece-wise fitting of exponential function
     interval = 3 # in days
