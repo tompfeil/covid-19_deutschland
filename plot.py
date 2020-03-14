@@ -8,6 +8,9 @@ import numpy as np
 
 countries = ['Germany', 'Italy', 'Korea, South']
 epsilon = 1e-6
+translation = {'Germany': 'Deutschland',
+        'Italy': 'Italien',
+        'Korea, South': 'Südkorea'}
 
 # load data
 data = pandas.read_csv('COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv')
@@ -15,7 +18,8 @@ data = pandas.read_csv('COVID-19/csse_covid_19_data/csse_covid_19_time_series/ti
 # filter cases in Germany
 data = data[data['Country/Region'].isin(countries)]
 # generate mapping of index to country
-indices_countries = {index: countries[i] for i, index in enumerate(data.index.to_list())}
+indices_countries = {index: translation[countries[i]] for i, index in enumerate(data.index.to_list())}
+countries = [translation[country] for country in countries]
 # check if number of found data rows equals number of queries
 assert(len(data.index) == len(countries))
 
@@ -68,9 +72,9 @@ for country in countries:
 
     # plot
     fig, ax = plt.subplots()
-    ax.plot(index_dates, cases, label='data')
-    ax.plot(index_dates, exp_func(index, a, t), label='fit a=%f, t=%f' % restr(a, t))
-    ax.plot(index_dates, exp_func(index, np.power(2, c), 1 / b), label='log2 fit b=%f, c=%f' % restr(b, c))
+    ax.plot(index_dates, cases, label='Rohdaten')
+    ax.plot(index_dates, exp_func(index, a, t), label='Fit a=%.3f, t=%.3f' % restr(a, t))
+    ax.plot(index_dates, exp_func(index, np.power(2, c), 1 / b), label='Fit (log2) b=%.3f, c=%.3f' % restr(b, c))
     ax.set_title(country)
     ax.set_ylim(-np.max(cases) / 20.0, np.max(cases) * 1.2)
     ax.set_xticks(np.linspace(index[0], index[-1], 6))
