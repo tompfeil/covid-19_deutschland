@@ -3,6 +3,8 @@ from dateutil.parser import parse
 import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
+import numpy as np
 
 countries = ['Germany', 'Italy', 'Korea, South']
 
@@ -39,3 +41,25 @@ plt.savefig('cases.png')
 # log plot
 data.plot(logy=True, grid=True, title='Fälle (auf logarithmischer Skala) - Stand ' + last_date)
 plt.savefig('cases_log.png')
+
+# fitting exponential functions to data
+def exp_func(x, a, t, c):
+    # consider growth only
+    a = np.abs(a)
+    t = np.abs(t)
+    return a * np.exp(x / t) + c
+
+for country in countries:
+    cases = data[country].to_list()
+    index = range(len(cases))
+    fit = curve_fit(exp_func, index, cases, maxfev=1000)
+
+    index_dates = data.index.to_list()
+    fig, ax = plt.subplots()
+    ax.plot(index_dates, cases, label='data')
+    ax.plot(index_dates, exp_func(index, *fit[0]), label='fit')
+    ax.set_title(country)
+    ax.set_ylim(-np.max(cases) / 20.0, np.max(cases) * 1.2)
+    ax.set_xticks(np.linspace(index[0], index[-1], 6))
+    ax.legend()
+    fig.savefig(country + '_fit.png')
