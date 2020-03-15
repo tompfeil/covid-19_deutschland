@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 import numpy as np
 
-countries = ['Germany', 'Italy', 'Korea, South', 'Spain', 'France', 'US', 'Japan'] # 'China'
+countries = ['Germany', 'Italy', 'Korea, South', 'France', 'US', 'Japan'] # 'China', 'Spain'
 epsilon = 1e-6
 translation = {'Germany': 'Deutschland',
         'Italy': 'Italien',
@@ -113,10 +113,10 @@ for j, country in enumerate(countries):
 #        else: # do not align start
 #            fit_over_time.append([np.nan, np.nan])
     fit_over_time = np.array(fit_over_time)
-    axT.plot(range(len(fit_over_time)), 1 / fit_over_time[:, 0], label=country)
+    axT.plot(range(len(fit_over_time)), 1 / fit_over_time[:, 0], label=country, zorder=-j)
 
 # formatting
-axT.legend()
+axT.legend(loc=2)
 axT.set_xlim([0, xlim_max + 5])
 axT.set_ylim([-1, 15])
 axT.set_xlabel('Tage seit Fälle > ' + str(cases_min))
