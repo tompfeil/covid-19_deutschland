@@ -6,22 +6,39 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 import numpy as np
 
-countries = ['Germany', 'Italy', 'Korea, South']
+countries = ['Germany', 'Italy', 'Korea, South', 'Spain', 'France', 'US', 'Japan'] # 'China'
 epsilon = 1e-6
 translation = {'Germany': 'Deutschland',
         'Italy': 'Italien',
-        'Korea, South': 'Südkorea'}
+        'Korea, South': 'Südkorea',
+        'Spain': 'Spanien',
+        'France': 'Frankreich',
+        'US': 'USA',
+        'Japan': 'Japan',
+        'China': 'China'}
 
 # load data
 data = pandas.read_csv('COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv')
+# drop provinces of France, data has already accumulated entry
+data = data.drop(data[(data['Country/Region'] == 'France') & (data['Province/State'] != 'France')].index)
+def collapse(data, country):
+    data_country = data[data['Country/Region'] == country].sum()
+    data_country['Country/Region'] = country
+    data = data.drop(data[data['Country/Region'] == country].index)
+    data = data.append(data_country, ignore_index=True)
+    return data
+# collapse entries of US
+data = collapse(data, 'US')
+# collapse entries of China
+data = collapse(data, 'China')
 
-# filter cases in Germany
+# filter countries
 data = data[data['Country/Region'].isin(countries)]
-# generate mapping of index to country
-indices_countries = {index: translation[countries[i]] for i, index in enumerate(data.index.to_list())}
-countries = [translation[country] for country in countries]
 # check if number of found data rows equals number of queries
 assert(len(data.index) == len(countries))
+# generate mapping of index to country
+indices_countries = {data[data['Country/Region'] == country].index[0]: translation[country] for country in countries}
+countries = [translation[country] for country in countries]
 
 # remove columns that are not needed anymore
 data = data.drop(labels=['Province/State', 'Country/Region', 'Lat', 'Long'], axis='columns')
@@ -59,9 +76,12 @@ def exp_func(x, a, t):
 figT, axT = plt.subplots()
 index_dates = data.index.to_list()
 index = np.arange(len(index_dates))
-for country in countries:
-    cases_min = 50 # min cases for fitting curves
+cases_min = 30 # min cases for fitting curves
+xlim_max = 0
+for j, country in enumerate(countries):
     cases = np.array(data[country].to_list())
+    if j == 0:
+        xlim_max = len(cases[cases > cases_min])
     # fit in original space
     (a, t), (a_cov, t_cov) = curve_fit(exp_func, index, cases, maxfev=1000)
     # fit in log space
@@ -82,8 +102,7 @@ for country in countries:
     fig.savefig(country.replace('ü', 'ue') + '_fit.png')
 
     # piece-wise fitting of exponential function
-    interval = 3 # in days
-    cases_min = 30 # min cases for fitting curves
+    interval = 4 # in days
     fit_over_time = []
     for i in range(len(cases) - interval):
         if cases[i] > cases_min:
@@ -98,7 +117,9 @@ for country in countries:
 
 # formatting
 axT.legend()
+axT.set_xlim([0, xlim_max + 5])
 axT.set_ylim([-1, 15])
 axT.set_xlabel('Tage seit Fälle > ' + str(cases_min))
 axT.set_ylabel('Tage bis Fälle verdoppelt')
+axT.set_title('Stand ' + last_date)
 figT.savefig('tau.png')
