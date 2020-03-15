@@ -80,7 +80,7 @@ xlim_max = 0
 for j, country_index in enumerate(sorted(indices_countries)):
     country = indices_countries[country_index]
     cases = np.array(data[country].to_list())
-    if j == 0:
+    if country == translation['Germany']:
         xlim_max = len(cases[cases > cases_min])
     # fit in original space
     (a, t), (a_cov, t_cov) = curve_fit(exp_func, index, cases, maxfev=1000)
