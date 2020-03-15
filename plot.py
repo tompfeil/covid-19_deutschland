@@ -38,7 +38,6 @@ data = data[data['Country/Region'].isin(countries)]
 assert(len(data.index) == len(countries))
 # generate mapping of index to country
 indices_countries = {data[data['Country/Region'] == country].index[0]: translation[country] for country in countries}
-countries = [translation[country] for country in countries]
 
 # remove columns that are not needed anymore
 data = data.drop(labels=['Province/State', 'Country/Region', 'Lat', 'Long'], axis='columns')
@@ -78,7 +77,8 @@ index_dates = data.index.to_list()
 index = np.arange(len(index_dates))
 cases_min = 30 # min cases for fitting curves
 xlim_max = 0
-for j, country in enumerate(countries):
+for j, country_index in enumerate(sorted(indices_countries)):
+    country = indices_countries[country_index]
     cases = np.array(data[country].to_list())
     if j == 0:
         xlim_max = len(cases[cases > cases_min])
