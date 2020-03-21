@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 import numpy as np
 
-countries = ['Germany', 'Italy', 'Korea, South', 'France', 'US', 'Japan'] # 'China', 'Spain'
+countries = ['Germany', 'Italy', 'Korea, South', 'France', 'US', 'Japan', 'China', 'Spain']
 epsilon = 1e-6
 translation = {'Germany': 'Deutschland',
         'Italy': 'Italien',
